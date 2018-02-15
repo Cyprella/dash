@@ -1298,19 +1298,26 @@ CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 bool IsInitialBlockDownload()
 {
     static bool lockIBDState = false;
-    if (lockIBDState)
+    if (lockIBDState) {
         return false;
+    }
     if (fImporting || fReindex)
         return true;
     LOCK(cs_main);
     const CChainParams& chainParams = Params();
     if (chainActive.Tip() == NULL)
         return true;
-    if (chainActive.Tip()->nChainWork < UintToArith256(chainParams.GetConsensus().nMinimumChainWork))
+    if (chainActive.Tip()->nChainWork < UintToArith256(chainParams.GetConsensus().nMinimumChainWork)) {
+        LogPrintf("IsInitialBlockDownload: nChainWork\n");
         return true;
-    if (chainActive.Tip()->GetBlockTime() < (GetTime() - chainParams.MaxTipAge()))
+    }
+    if (chainActive.Tip()->GetBlockTime() < (GetTime() - chainParams.MaxTipAge())) {
+        LogPrintf("IsInitialBlockDownload: GetBlockTime\n");
         return true;
+    }
     lockIBDState = true;
+
+    LogPrintf("IsInitialBlockDownload: else");
     return false;
 }
 
